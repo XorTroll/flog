@@ -1,0 +1,5 @@
+.vscode/
+build/
+output/
+ksd_fs/
+*.gen.cpp
