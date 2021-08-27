@@ -82,12 +82,13 @@ def add_file(file_count, header_data, file_data, path):
         if has_playchoice:
             print(" |- ROM has PlayChoice INST-ROM data, this data won't be included as it won't be used...")
 
-        header_fmt = "<IBBxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        header_fmt = "<IBBHxxxxxxxxxxxxxxxxxxxxxxxx"
         header_size = struct.calcsize(header_fmt)
 
         # Size of all headers + all files before the current one
         file_offset = header_size * file_count + len(file_data)
-        new_header = struct.pack(header_fmt, file_offset, prg_bank_count, chr_bank_count)
+        unk = 0x2AA # TODO: what is this value? not setting it / zeroing it crashes flog (error related with mapper 0xAA?)
+        new_header = struct.pack(header_fmt, file_offset, prg_bank_count, chr_bank_count, unk)
 
         write_size = prg_bank_count * size_16kb + chr_bank_count * size_8kb
         if write_size > file_size:
@@ -101,13 +102,28 @@ def add_file(file_count, header_data, file_data, path):
 
     return True
 
+def print_usage():
+    print("Usage:")
+    print(" -- Generate C++ source file: " + sys.argv[0] + " --cpp <input_dir> <output_cpp_src>")
+    print(" -- Generate binary file: " + sys.argv[0] + " <input_dir> <output_bin>")
+
 def main():
     if len(sys.argv) < 3:
-        print("Usage: " + sys.argv[0] + " <input_dir> <output_cpp_src>")
+        print_usage()
         return
 
-    in_dir = sys.argv[1]
-    out_src = sys.argv[2]
+    if sys.argv[1] == "--cpp":
+        if len(sys.argv) < 4:
+            print_usage()
+            return
+
+        gen_cpp = True
+        in_dir = sys.argv[2]
+        out_file = sys.argv[3]
+    else:
+        gen_cpp = False
+        in_dir = sys.argv[1]
+        out_file = sys.argv[2]
 
     header_data = bytearray()
     file_data = bytearray()
@@ -125,9 +141,13 @@ def main():
     fs_data = header_data + file_data
     print("Final filesystem data size: " + hex(len(fs_data)))
 
-    gen_src(fs_data, out_src)
-
-    print("Generated filesystem data at '" + out_src + "'...")
+    if gen_cpp:
+        gen_src(fs_data, out_file)
+        print("Generated filesystem C++ source at '" + out_file + "'...")
+    else:
+        with open(out_file, "wb") as out_fd:
+            out_fd.write(fs_data)
+        print("Generated filesystem binary file at '" + out_file + "'...")
 
 if __name__ == "__main__":
     main()
