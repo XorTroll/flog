@@ -27,14 +27,24 @@ namespace nn {
     namespace os {
 
         struct MutexType : Stubbed<0x20> {};
+        struct Mutex : Stubbed<0x20> {};
+        struct SystemEventType : Stubbed<0x30> {};
+        struct SystemEvent : Stubbed<0x30> {};
 
-        struct SystemEvent {
-
+        struct MemoryInfo {
+            size_t a;
+            size_t b;
         };
 
         void InitializeMutex(MutexType *mutex, bool recursive, int lock_level);
 
         u64 GetSystemTick();
+
+        void QueryMemoryInfo(MemoryInfo *out_info);
+
+        Result SetMemoryHeapSize(size_t heap_size);
+        Result AllocateMemoryBlock(void **out_block_addr, size_t size);
+        void SetMemoryAllocatorForThreadLocal(void*(*alloc_fn)(size_t, size_t), void(*free_fn)(void*, size_t));
 
     }
 

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno>
 
 using u8 = uint8_t;
 using u16 = uint16_t;
@@ -13,6 +14,9 @@ using i16 = int16_t;
 using i32 = int32_t;
 using i64 = int64_t;
 
-#define countof(array) sizeof(array) / sizeof(array[0])
+template<typename T, size_t N>
+inline constexpr size_t countof(T (&_)[N]) {
+    return N;
+}
 
 #include <nn_Includes.hpp>
