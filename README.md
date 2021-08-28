@@ -20,9 +20,7 @@ Despite Nintendo Switch applications having the RomFs filesystem to place files 
 
 In fact, flog does have a non-empty RomFs, but the only present file is a single 0-byte file, interestingly named `AtLeastOneFile`.
 
-Surprisingly, the ROM doesn't consist on just hardcoded regular NES ROM data, since this raw data has its own filesystem format
-
-I refer to this filesystem as "KSD filesystem/KSD FS" on my work in this repo since several flog symbols show source files named as "ksd_<...>.cpp", but this name is made up.
+Surprisingly, the ROM doesn't consist on just hardcoded regular NES ROM data, since this raw data has its own filesystem format. I refer to this filesystem as "KSD filesystem/KSD FS" on my work in this repo since several flog symbols show source files named as "ksd_<...>.cpp", but always keep in mind that this name is made up.
 
 Reversing the expected format of this embedded filesystem led to the following conclusions:
 
@@ -42,7 +40,7 @@ Reversing the expected format of this embedded filesystem led to the following c
 
  - For instance, the regular flog NES ROM is 0x8010/0x6010 bytes (depending on whether it has PlayChoice data), with those extra 0x10 bytes being the iNES header. The embedded filesystem in flog is 0x6020 bytes, which is essentially the normal/without-PlayChoice ROM, replacing the iNES header with the custom one.
 
- - Considering everything which has been already mentioned, the embedded filesystem was likely generated on compile-time and embedded as a byte array with `` or similar tools.
+ - Considering everything which has been already mentioned, the embedded filesystem was likely generated on compile-time and embedded as a byte array with `bin2c` or similar tools.
 
 Since the filesystem is only for NES ROMs, other files flog uses but doesn't store in RomFs, like binary shader files (`*.bnsh`), are also embedded in the code, but directly, not in a filesystem format.
 
