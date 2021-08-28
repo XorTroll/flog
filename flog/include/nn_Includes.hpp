@@ -39,6 +39,7 @@ namespace nn {
         void InitializeMutex(MutexType *mutex, bool recursive, int lock_level);
 
         u64 GetSystemTick();
+        u64 GetSystemTickFrequency();
 
         void QueryMemoryInfo(MemoryInfo *out_info);
 

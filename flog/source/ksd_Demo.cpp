@@ -100,6 +100,22 @@ namespace ksd {
             return g_Allocator.Reallocate(ptr, size);
         }
 
+        float EstimateCpuFrequencyOnce() {
+            const auto freq = nn::os::GetSystemTickFrequency(); 
+
+            const auto timer_begin = nn::os::GetSystemTick();
+            auto left_iters = 1000000;
+            auto keep = true;
+            do {
+                keep = left_iters > 2;
+                left_iters -= 2;
+            } while(keep);
+            const auto timer_end = nn::os::GetSystemTick();
+            NN_ASSERT((timer_end - timer_begin) > 0);
+
+            return static_cast<double>(1000000 * freq) / static_cast<double>(timer_end - timer_begin);
+        }
+
     }
 
     void Initialize() {
